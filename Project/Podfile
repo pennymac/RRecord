@@ -1,0 +1,7 @@
+pod "RRecrod", :path => "../RRecrod.podspec"
+
+target "Demo" do
+end
+
+target "DemoTests" do
+end
