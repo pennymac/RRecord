@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name             = "RRecord"
-  s.version          = "0.4.0"
+  s.version          = "0.4.1"
   s.summary          = "A active record like core data wrapper."
   s.description      = <<-DESC
                        "A active record like core data wrapper."
