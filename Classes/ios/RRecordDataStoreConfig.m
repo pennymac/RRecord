@@ -10,12 +10,13 @@
 
 @implementation RRecordDataStoreConfig
 
--(id)initWithDatabaseFileName:(NSString *)dFileName andModelFileName:(NSString *)mFileName{
+-(id)initWithDatabaseFileName:(NSString *)dFileName modelFileName:(NSString *)mFileName andBundle:(NSBundle *)bundle{
     self = [self init];
 
     if (self) {
         self.databaseFileName = dFileName;
         self.modelFileName = mFileName;
+	self.bundle = bundle;
     }
 
     return self;

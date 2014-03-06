@@ -9,8 +9,9 @@
 #import <Foundation/Foundation.h>
 
 @interface RRecordDataStoreConfig : NSObject
-    -(id)initWithDatabaseFileName:(NSString *)dFileName andModelFileName:(NSString *)mFileName;
+    -(id)initWithDatabaseFileName:(NSString *)dFileName modelFileName:(NSString *)mFileName andBundle:(NSBundle *)bundle;
 
+    @property NSBundle *bundle;
     @property NSString *databaseFileName;
     @property NSString *modelFileName;;
 @end

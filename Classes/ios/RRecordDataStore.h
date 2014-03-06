@@ -14,6 +14,7 @@
 @interface RRecordDataStore : NSObject
 
 + (RRecordDataStore *)instance;
++ (RRecordDataStore *)instanceWithConfig:(RRecordDataStoreConfig *)config;
 
 @property RRecordDataStoreConfig *config;
 @property (readonly, strong, nonatomic) NSManagedObjectContext *managedObjectContext;

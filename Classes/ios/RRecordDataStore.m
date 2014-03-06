@@ -21,10 +21,17 @@
     static RRecordDataStore *_instance = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        _instance = [[RRecordDataStore alloc] init];
+        _instance = [RRecordDataStore alloc];
     });
     return _instance;
 }
+
++ (RRecordDataStore *)instanceWithConfig:(RRecordDataStoreConfig *)config {
+    RRecordDataStore *instance = [RRecordDataStore instance];
+   instance.config = config;
+   return [instance init];
+}
+
 
 - (id)init {
     [self initManagedObjectModel];
@@ -81,7 +88,7 @@
 }
 
 - (void)initManagedObjectModel {
-    NSURL *modelURL = [[NSBundle mainBundle] URLForResource:_config.modelFileName
+    NSURL *modelURL = [_config.bundle URLForResource:_config.modelFileName
                                               withExtension:@"momd"];
     _managedObjectModel = [[NSManagedObjectModel alloc] initWithContentsOfURL:modelURL];
 }
