@@ -50,7 +50,7 @@
 - (void)initManagedObjectContext {    
     NSPersistentStoreCoordinator *coordinator = [self persistentStoreCoordinator];
     if (coordinator != nil) {
-        _managedObjectContext = [[NSManagedObjectContext alloc] init];
+        _managedObjectContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType];
         [_managedObjectContext setPersistentStoreCoordinator:coordinator];
     }
 }
@@ -104,6 +104,14 @@
     }
     
     return YES;
+}
+
+-(void)withContextForThread:(void (^)(NSManagedObjectContext *) )operationsOnContext{
+    NSManagedObjectContext *contextForThread = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSMainQueueConcurrencyType];
+    contextForThread.parentContext = self.managedObjectContext;
+    [contextForThread performBlock:^{
+        operationsOnContext(contextForThread);
+    }];
 }
 
 @end

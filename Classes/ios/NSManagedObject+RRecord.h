@@ -17,25 +17,33 @@
 #pragma mark - CRUD type methods for default
 
 + (id)create;
++ (id)createInContext:(NSManagedObjectContext *)context;
 
 + (NSArray *)all;
++ (NSArray *)allInContext:(NSManagedObjectContext *)context;
+
 + (void)deleteAll;
++ (void)deleteAllInContext:(NSManagedObjectContext *)context;
+
 + (NSUInteger)count;
++ (NSUInteger)countInContext:(NSManagedObjectContext *)context;
+
 + (id)first;
++ (id)firstFromContext:(NSManagedObjectContext *)context;
 
 + (NSArray *)where:(id)condition;
++ (id)whereInContext:(NSManagedObjectContext *)context
+       byCondition:(id)condition;
 
 - (BOOL)save;
 - (void)delete;
 
-#pragma mark - CRUD type methods for explicit context
-
 + (NSFetchRequest *)createFetchRequestInContext:(NSManagedObjectContext *)context;
-+ (id)createInContext:(NSManagedObjectContext *)context;
+
 + (NSArray *)fetchWithPredicate:(NSPredicate *)predicate
                       inContext:(NSManagedObjectContext *)context;
 
-+ (NSArray *)allInContext:(NSManagedObjectContext *)context;
-+ (void)deleteAllInContext:(NSManagedObjectContext *)context;
+
+
 
 @end
