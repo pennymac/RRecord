@@ -20,28 +20,63 @@
     return [self createInContext:dataStore.managedObjectContext];
 }
 
-- (BOOL)save {
-    RRecordDataStore *dataStore = [RRecordDataStore instance];
-    NSError *error = nil;
-    
-    BOOL didSave = [dataStore saveContext:&error];
-    return didSave;
++ (id)createInContext:(NSManagedObjectContext *)context {
+    return [NSEntityDescription insertNewObjectForEntityForName:[self entityName]
+                                         inManagedObjectContext:context];
 }
 
-- (void)delete {
-    [self.managedObjectContext deleteObject:self];
-    [self save];
++ (NSArray *)all {
+    RRecordDataStore *dataStore = [RRecordDataStore instance];
+    return [self allInContext:dataStore.managedObjectContext];
+}
+
++ (NSArray *)allInContext:(NSManagedObjectContext *)context {
+    return [self fetchWithPredicate:nil inContext:context];
+}
+
++ (void)deleteAll {
+    [self deleteAllInContext:[[RRecordDataStore instance] managedObjectContext]];
+}
+
++ (void)deleteAllInContext:(NSManagedObjectContext *)context {
+    for (NSManagedObject *obj in [self all]) {
+        [obj delete];
+    }
+}
+
++ (NSUInteger)count {
+    RRecordDataStore *dataStore = [RRecordDataStore instance];
+    NSManagedObjectContext *context = dataStore.managedObjectContext;
+    return [self countInContext:context];
+}
+
++ (NSUInteger)countInContext:(NSManagedObjectContext *)context {
+    NSFetchRequest *request = [[NSFetchRequest alloc] init];
+    [request setEntity:[NSEntityDescription entityForName:[self entityName] inManagedObjectContext: context]];
+    
+    [request setIncludesSubentities:NO];
+    NSError *err;
+    NSUInteger count = [context countForFetchRequest:request error:&err];
+    if(count == NSNotFound) {
+        return 0;
+    }
+    return count;
 }
 
 + (id)first {
     RRecordDataStore *dataStore = [RRecordDataStore instance];
+    NSManagedObjectContext *context = dataStore.managedObjectContext;
+    return [self firstFromContext:context];
+}
+
++ (id)firstFromContext:(NSManagedObjectContext *)context{
     NSFetchRequest *request = [[NSFetchRequest alloc] init];
-    [request setEntity:[NSEntityDescription entityForName:[self entityName] inManagedObjectContext:dataStore.managedObjectContext]];
+    [request setEntity:[NSEntityDescription entityForName:[self entityName] inManagedObjectContext:context]];
     [request setPredicate:nil];
     [request setFetchLimit:1];
     
     NSError *error;
-    NSArray *results = [dataStore.managedObjectContext executeFetchRequest:request error:&error];
+    NSArray *results = [context executeFetchRequest:request error:&error];
     
     if ([results count]){
         return [results objectAtIndex:0];
@@ -50,19 +85,21 @@
     return nil;
 }
 
-+ (NSUInteger)count {
++ (NSArray *)where:(id)condition {
     RRecordDataStore *dataStore = [RRecordDataStore instance];
-    NSFetchRequest *request = [[NSFetchRequest alloc] init];
-    [request setEntity:[NSEntityDescription entityForName:[self entityName] inManagedObjectContext:dataStore.managedObjectContext]];
+    NSManagedObjectContext *context = dataStore.managedObjectContext;
     
-    [request setIncludesSubentities:NO];    
-    NSError *err;
-    NSUInteger count = [dataStore.managedObjectContext countForFetchRequest:request error:&err];
-    if(count == NSNotFound) {
-        return 0;
-    }
-    return count;
+    return [self whereInContext:context byCondition:condition];
 }
+
++ (id)whereInContext:(NSManagedObjectContext *)context
+         byCondition:(id)condition {
+    NSPredicate *predicate = ([condition isKindOfClass:[NSPredicate class]]) ? condition
+    : [self predicateFromStringOrDict:condition];
+    
+    return [self fetchWithPredicate:predicate inContext:context];
+}
+
 
 + (NSFetchRequest *)createFetchRequestInContext:(NSManagedObjectContext *)context {
     NSFetchRequest *request = [[NSFetchRequest alloc] init];
@@ -71,6 +108,17 @@
                                               inManagedObjectContext:context];
     [request setEntity:entity];
     return request;
+}
+
+- (BOOL)save {
+    NSError *error = nil;
+    [self.managedObjectContext save:&error];
+    return error == nil;
+}
+
+- (void)delete {
+    [self.managedObjectContext deleteObject:self];
+    [self save];
 }
 
 + (NSArray *)fetchWithPredicate:(NSPredicate *)predicate
@@ -113,36 +161,5 @@
     return nil;
 }
 
-+ (id)createInContext:(NSManagedObjectContext *)context {
-    return [NSEntityDescription insertNewObjectForEntityForName:[self entityName]
-                                         inManagedObjectContext:context];
-}
-
-+ (NSArray *)allInContext:(NSManagedObjectContext *)context {
-    return [self fetchWithPredicate:nil inContext:context];
-}
-
-+ (NSArray *)all {
-    RRecordDataStore *dataStore = [RRecordDataStore instance];
-    return [self allInContext:dataStore.managedObjectContext];
-}
-
-+ (NSArray *)where:(id)condition {
-    RRecordDataStore *dataStore = [RRecordDataStore instance];
-    NSPredicate *predicate = ([condition isKindOfClass:[NSPredicate class]]) ? condition
-    : [self predicateFromStringOrDict:condition];
-    
-    return [self fetchWithPredicate:predicate inContext:dataStore.managedObjectContext];
-}
-
-+ (void)deleteAll {
-    [self deleteAllInContext:[[RRecordDataStore instance] managedObjectContext]];
-}
-
-+ (void)deleteAllInContext:(NSManagedObjectContext *)context {
-    for (NSManagedObject *obj in [self all]) {        
-        [obj delete];
-    }
-}
 
 @end

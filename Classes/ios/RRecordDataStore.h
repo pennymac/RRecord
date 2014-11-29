@@ -21,6 +21,9 @@
 @property (readonly, strong, nonatomic) NSPersistentStoreCoordinator *persistentStoreCoordinator;
 @property (readonly, strong, nonatomic) NSManagedObjectModel *managedObjectModel;
 
+
 -(BOOL)saveContext:(NSError**)error;
+
+-(void)withContextForThread:( void (^)(NSManagedObjectContext *) )operationsOnContext;
 
 @end
